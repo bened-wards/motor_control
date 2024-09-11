@@ -1,4 +1,4 @@
-debug_mode:               false
+debug_mode:               true
 
 ## ENCODER CONFIG
 ticks_per_rev:            3592      # 12 * 74.83 * 4 is approx 3591.92533 // reading rising and falling edges of both
@@ -6,14 +6,14 @@ ticks_per_rev:            3592      # 12 * 74.83 * 4 is approx 3591.92533 // rea
 speed_interrupt_millis:   20        # how often to read from encoders
 
 ## MOTOR CONFIG
-wheel_radius_scale:       1.307488  # scale from calibration
-wheel_radius:             0.0225    # m
-wheel_separation_scale:   1.01      # baseline scale from calibration
-wheel_separation:         0.225     # m
+wheel_radius_scale:       1.0366    # scale from calibration
+wheel_radius:             0.048     # m
+wheel_separation_scale:   0.9937    # baseline scale from calibration
+wheel_separation:         0.262     # m
 
 ## CONTROL PID GAINS
-kp:                       0.5
-ki:                       0.02
+kp:                       0.3
+ki:                       0.03
 
 ## PIN NUMBERS (PWM OR GPIO NUMBER)
 # MOTOR CONTROL
