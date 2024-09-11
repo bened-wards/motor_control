@@ -1,0 +1,30 @@
+debug_mode:               false
+
+## ENCODER CONFIG
+ticks_per_rev:            3592      # 12 * 74.83 * 4 is approx 3591.92533 // reading rising and falling edges of both
+
+speed_interrupt_millis:   20        # how often to read from encoders
+
+## MOTOR CONFIG
+wheel_radius_scale:       1.307488  # scale from calibration
+wheel_radius:             0.0225    # m
+wheel_separation_scale:   1.01      # baseline scale from calibration
+wheel_separation:         0.225     # m
+
+## CONTROL PID GAINS
+kp:                       0.5
+ki:                       0.02
+
+## PIN NUMBERS (PWM OR GPIO NUMBER)
+# MOTOR CONTROL
+enable_left:              1         # PWMB on chip      # PWM1 on Pi
+in1_left:                 24        # BIN2 on chip
+in2_left:                 23        # BIN1
+enable_right:             0         # PWMA on chip      # PWM0 on Pi
+in1_right:                17        # AIN1
+in2_right:                27        # AIN2
+# ENCODERS
+encA_left:                5
+encB_left:                6
+encA_right:               19
+encB_right:               26
