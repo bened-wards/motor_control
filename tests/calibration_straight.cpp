@@ -20,6 +20,8 @@ void poll(std::chrono::seconds duration, Robot& robot, int speedInterruptMillis,
         if (debugMode && ++printCounter > 10) {
 	        const VelocityState& vel = robot.getCurrentVelocity();
             const VelocityState& desiredVel = robot.getDesiredVelocity();
+            const WheelSpeed& wheelSpeed = robot.getCurrentWheelSpeed();
+            std::cout << "LWS: " << wheelSpeed.left << ", RWS: " << wheelSpeed.right << std::endl;
             std::cout << "Curr. v=" << vel.v << ", w=" << vel.w << ". Des. v=" << desiredVel.v << ", w=" << desiredVel.w << std::endl;
             std::cout << "State: x=" << state.x << ", y=" << state.y << ", theta=" << state.theta << std::endl;
             printCounter = 0;
