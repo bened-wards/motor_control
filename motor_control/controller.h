@@ -17,6 +17,8 @@ public:
 
     Command getCommand(double desiredVelocity, double currentVelocity) override;
 
+    void reset();
+
 private:
     double m_Kp;
     double m_Ki;
