@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
     try {
         std::cout << "Creating left encoder thread\n";
-        std::thread leftThread(Loops::encoder_event_handler, std::ref(leftEncoder));
+        std::thread leftThread(Loops::encoder_event_handler, std::ref(leftEncoder), true);
         std::cout << "Creating right encoder thread\n";
         std::thread rightThread(Loops::encoder_event_handler, std::ref(rightEncoder));
 
