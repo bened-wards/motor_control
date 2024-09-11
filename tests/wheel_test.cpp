@@ -18,6 +18,7 @@ void poll(std::chrono::seconds duration, Wheel& leftWheel, Wheel& rightWheel, in
         }
         double leftSpeed = leftWheel.getSpeed();
         double rightSpeed = rightWheel.getSpeed();
+        lastInterrupt = std::chrono::steady_clock::now();
         printCounter++;
         if (printCounter > 10) {
             std::cout << "Left wheel speed: " << leftSpeed << "rad/s. RPM: " << leftSpeed * 60 / (2 * M_PI) << std::endl;

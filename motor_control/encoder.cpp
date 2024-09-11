@@ -7,10 +7,8 @@ double Encoder::getSpeed() {
     m_newCount = m_count.load();
     // number of ticks since prev deltaT
     double diff = m_newCount - m_prevCount;
-    std::cout << "diff: " << diff << std::endl;
 
     double radiansPerSecond = diff * m_radiansPerTick * 1000.0 / m_deltaTMillis;
-    std::cout << "radiansPerSecond: " << radiansPerSecond << std::endl;
     return radiansPerSecond;
 }
 
