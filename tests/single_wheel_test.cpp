@@ -18,7 +18,7 @@ void poll(std::chrono::seconds duration, Wheel& leftWheel, int speedInterruptMil
         }
         double leftSpeed = leftWheel.getSpeed();
         printCounter++;
-        if (printCounter > 1000000000) {
+        if (printCounter > 10) {
             std::cout << "Left wheel speed: " << leftSpeed << "rad/s. RPM: " << leftSpeed * 60 / (2 * M_PI) << std::endl;
             printCounter = 0;
         }

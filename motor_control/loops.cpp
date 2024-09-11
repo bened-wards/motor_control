@@ -15,16 +15,14 @@ namespace Loops {
         std::shared_ptr<gpiod::line> encALine = encoder.getEncALine();
         std::shared_ptr<gpiod::line> encBLine = encoder.getEncBLine();
         while (!stopFlag.load()) {
-            bool eventA = encALine->event_wait(std::chrono::microseconds(1));
+            bool eventA = encALine->event_wait(std::chrono::microseconds(10));
             if (eventA) {
                 bool rising = encALine->event_read().event_type == gpiod::line_event::RISING_EDGE;
-                std::cout << "Event A. Rising: " << (rising) << std::endl;
                 encoder.tick(true, rising);
             }
-            bool eventB = encBLine->event_wait(std::chrono::microseconds(1));
+            bool eventB = encBLine->event_wait(std::chrono::microseconds(10));
             if (eventB) {
                 bool rising = encBLine->event_read().event_type == gpiod::line_event::RISING_EDGE;
-                std::cout << "Event B. Rising: " << (rising) << std::endl;
                 encoder.tick(false, rising);
             }
         }
