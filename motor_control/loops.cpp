@@ -17,11 +17,15 @@ namespace Loops {
         while (!stopFlag.load()) {
             bool eventA = encALine->event_wait(std::chrono::microseconds(1));
             if (eventA) {
-                encoder.tick(true, encALine->event_read().event_type == gpiod::line_event::RISING_EDGE);
+                bool rising = encALine->event_read().event_type == gpiod::line_event::RISING_EDGE;
+                std::cout << "Event A. Rising: " << (rising) << std::endl;
+                encoder.tick(true, rising);
             }
             bool eventB = encBLine->event_wait(std::chrono::microseconds(1));
             if (eventB) {
-                encoder.tick(false, encBLine->event_read().event_type == gpiod::line_event::RISING_EDGE);
+                bool rising = encBLine->event_read().event_type == gpiod::line_event::RISING_EDGE;
+                std::cout << "Event B. Rising: " << (rising) << std::endl;
+                encoder.tick(false, rising);
             }
         }
     }
