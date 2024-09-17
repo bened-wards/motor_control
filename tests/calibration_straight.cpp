@@ -69,8 +69,9 @@ int main(int argc, char** argv)
         std::cout << "Creating right encoder thread\n";
         std::thread rightThread(Loops::encoder_event_handler, std::ref(rightEncoder));
 
-        for (int i = 1; i <= 3; i++) {
-            double vel = 0.05 * i;
+        double arr[5] = {0.05, 0.1, 0.15, 0.2, 0.25};
+        for (int i = 0; i < 5; i++) {
+            double vel = arr[i];
             std::cout << "Driving forwards for 5s with speed " << vel << std::endl;
             robot.setDesiredVelocity(VelocityState{vel,0});
             poll(std::chrono::seconds(5), robot, config.speedInterruptMillis, config.debugMode);

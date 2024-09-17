@@ -68,7 +68,21 @@ int main(int argc, char** argv)
         std::thread leftThread(Loops::encoder_event_handler, std::ref(leftEncoder));
         std::cout << "Creating right encoder thread\n";
         std::thread rightThread(Loops::encoder_event_handler, std::ref(rightEncoder));
-	double arr[5] = {0.15, 0.25, 0.4};
+	    double arr[3] = {0.15, 0.25, 0.4};
+        for (int i = 0; i < 3; i++) {
+            double vel = arr[i];
+            std::cout << "Rotating for 10s with angular vel = " << vel << std::endl;
+            robot.setDesiredVelocity(VelocityState{0,vel});
+            poll(std::chrono::seconds(5), robot, config.speedInterruptMillis, config.debugMode);
+            leftMotor.stop();
+            rightMotor.stop();
+            State state = robot.getState();
+            std::cout << "Final State: x=" << state.x << ", y=" << state.y << ", theta=" << state.theta << std::endl;
+            std::cin.get(); // pause until enter
+            robot.setState(State{0,0,0});
+        }
+
+        double arr[3] = {-0.15, -0.25, -0.4};
         for (int i = 0; i < 3; i++) {
             double vel = arr[i];
             std::cout << "Rotating for 10s with angular vel = " << vel << std::endl;
