@@ -29,8 +29,9 @@ public:
 
     // read in non-blocking manner. Returns true if buffer is full and ready to be read
     bool read();
-    // calls read function and parses velocity message for use in robot
-    VelocityState readBuffer();
+    // parse message received from main controller
+    std::optional<VelocityState> parseVelocityMsg();
+    std::optional<State> parseStateMsg();
 
     // send current velocity to main controller
     void writeCurrentVelocity(double v, double w);
@@ -42,8 +43,7 @@ private:
     void close();
     bool flushInputStream(int noBytes);
 
-    // parse message received from main controller
-    VelocityState parseVelocityMsg(const char* msg);
+    
 
     int m_serialPort;
     std::string m_deviceStr;

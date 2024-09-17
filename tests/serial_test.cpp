@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     signal(SIGINT, catchKeyboardInterrupt);
 
     // create worker thread to read and write to serial port
-    std::thread readThread(Loops::readAndSetDesiredVelocity, std::ref(serial), std::ref(robot));
+    std::thread readThread(Loops::readAndSetVelocityAndState, std::ref(serial), std::ref(robot));
     std::thread writeThread(writeToSerial, std::ref(serial), std::chrono::milliseconds(2500));
 
     readThread.join();

@@ -1,6 +1,7 @@
 #include "serial.h"
 
 #include <limits>
+#include <optional>
 
 namespace {
     bool DEBUG = true;
@@ -110,17 +111,12 @@ bool Serial::read() {
     return false;
 }
 
-VelocityState Serial::readBuffer() {
-    VelocityState desiredVel = parseVelocityMsg(m_buffer);
-    if (DEBUG) std::cout << "Desired velocity: linear=" << desiredVel.v << ", angular=" << desiredVel.w << std::endl;
-    // m_totalBytes = 0;
-    return desiredVel;
-}
 
-VelocityState Serial::parseVelocityMsg(const char* msg) {
+std::optional<VelocityState> Serial::parseVelocityMsg() {
+    const char* msg = m_buffer;
     if (msg[0] != 'v') {
-        std::cerr << "Invalid message received: " << msg << std::endl;
-        return VelocityState{std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+        std::cerr << "Invalid message received for velocity: " << msg << std::endl;
+        return std::nullopt;
     }
 
     double v = atof(msg+2);
@@ -131,7 +127,35 @@ VelocityState Serial::parseVelocityMsg(const char* msg) {
     if (msg[8] == '-') {
         w *= -1;
     }
+
+    if (DEBUG) std::cout << "Desired velocity: linear=" << v << ", angular=" << w << std::endl;
+
     return VelocityState{v, w};
+}
+
+std::optional<State> Serial::parseStateMsg() {
+    const char* msg = m_buffer;
+    if (msg[0] != 'x') {
+        std::cerr << "Invalid message received for state: " << msg << std::endl;
+        return std::nullopt;
+    }
+
+    double x = atof(msg+2);
+    if (msg[1] == '-') {
+        x *= -1;
+    }
+    double y = atof(msg+9);
+    if (msg[8] == '-') {
+        y *= -1;
+    }
+    double theta = atof(msg+16);
+    if (msg[15] == '-') {
+        theta *= -1;
+    }
+
+    if (DEBUG) std::cout << "Reset state: x=" << x << ", y=" << y << ", theta=" << theta << std::endl;
+
+    return State{x, y, theta};
 }
 
 void Serial::writeCurrentVelocity(double v, double w) {

@@ -91,7 +91,7 @@ int main(int argc, char** argv)
         std::thread rightThread(Loops::encoder_event_handler, std::ref(rightEncoder));
 
         // create worker thread to read from serial port and set robot velocity
-        std::thread readThread(Loops::readAndSetDesiredVelocity, std::ref(serial), std::ref(robot));
+        std::thread readThread(Loops::readAndSetVelocityAndState, std::ref(serial), std::ref(robot));
 
         // main polling loop
         poll(std::chrono::seconds(timeout), robot, serial, config.speedInterruptMillis, config.debugMode);

@@ -11,6 +11,6 @@ namespace Loops {
     // on rising edge ticks the encoder
     void encoder_event_handler(Encoder& encoder);
 
-    void readAndSetDesiredVelocity(Serial& serial, Robot& robot);
+    void readAndSetVelocityAndState(Serial& serial, Robot& robot);
 }
 

@@ -29,17 +29,30 @@ namespace Loops {
     }
 
     // infinitely loop waiting for information from main controller
-    void readAndSetDesiredVelocity(Serial& serial, Robot& robot) {
+    void readAndSetVelocityAndState(Serial& serial, Robot& robot) {
         while (!stopFlag.load()) {
             bool bufferReady = serial.read();
             if (bufferReady) {
-                VelocityState desiredVel = serial.readBuffer();
-                if (std::isnan(desiredVel.v)) {
-                    if (DEBUG) std::cout << "Desired velocity is NaN, skipping\n";
+                std::optional<VelocityState> desiredVelOpt = serial.parseVelocityMsg();
+                if (desiredVelOpt.has_value()) {
+                    VelocityState desiredVel = desiredVelOpt.value();
+                    if (DEBUG) std::cout << "Setting desired velocity from read buffer: linear=" << desiredVel.v << ", angular=" << desiredVel.w << std::endl;
+                    robot.setDesiredVelocity(desiredVel);
                     continue;
                 }
-                if (DEBUG) std::cout << "Setting desired velocity from read buffer: linear=" << desiredVel.v << ", angular=" << desiredVel.w << std::endl;
-                robot.setDesiredVelocity(desiredVel);
+                else {
+                    if (DEBUG) std::cout << "Invalid velocity message, trying state message\n";
+                }
+
+                std::optional<State> stateOpt = serial.parseStateMsg();
+                if (stateOpt.has_value()) {
+                    State state = stateOpt.value();
+                    if (DEBUG) std::cout << "Setting state from read buffer: x=" << state.x << ", y=" << state.y << ", theta=" << state.theta << std::endl;
+                    robot.setState(state);
+                    continue;
+                }
+
+                if (DEBUG) std::cerr << "Invalid message received, skipping\n";
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(readPeriodMillis));
         }
