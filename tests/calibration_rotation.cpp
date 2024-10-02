@@ -82,9 +82,9 @@ int main(int argc, char** argv)
             robot.setState(State{0,0,0});
         }
 
-        double arr[3] = {-0.15, -0.25, -0.4};
+        // double arr[3] = {-0.15, -0.25, -0.4};
         for (int i = 0; i < 3; i++) {
-            double vel = arr[i];
+            double vel = -arr[i];
             std::cout << "Rotating for 10s with angular vel = " << vel << std::endl;
             robot.setDesiredVelocity(VelocityState{0,vel});
             poll(std::chrono::seconds(5), robot, config.speedInterruptMillis, config.debugMode);
