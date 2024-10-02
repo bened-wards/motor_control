@@ -6,9 +6,9 @@ ticks_per_rev:            3592      # 12 * 74.83 * 4 is approx 3591.92533 // rea
 speed_interrupt_millis:   20        # how often to read from encoders
 
 ## MOTOR CONFIG
-wheel_radius_scale:       1.0366    # scale from calibration
+wheel_radius_scale:       1.027    # scale from calibration
 wheel_radius:             0.048     # m
-wheel_separation_scale:   0.9937    # baseline scale from calibration
+wheel_separation_scale:   0.98253    # baseline scale from calibration
 wheel_separation:         0.262     # m
 
 ## CONTROL PID GAINS
