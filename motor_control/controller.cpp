@@ -32,6 +32,6 @@ Command Controller::getCommand(double desiredVelocity, double currentVelocity) {
 }
 
 void Controller::reset() {
-    std::cout << "Resetting controller as reached zero speed desired and current\n";
+    // std::cout << "Resetting controller as reached zero speed desired and current\n";
     m_errorSum = 0;
 }
