@@ -23,7 +23,7 @@ void writeToSerial(Serial& serial, std::chrono::milliseconds send_period) {
     double y = 2.000;
     double theta = 3.000;
     while (!Loops::stopFlag.load()) {
-        serial.writeCurrentVelocity(v, w);
+        // serial.writeCurrentVelocity(v, w);
         v -= 0.1;
         w += 0.1;
         serial.writeCurrentState(x, y, theta);
