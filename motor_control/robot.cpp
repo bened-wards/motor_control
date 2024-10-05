@@ -26,7 +26,8 @@ void Robot::onSpeedInterrupt() {
     //     ". Right command: " << ((rightCommand.direction==Direction::REVERSE) ? '-' : '+') << rightCommand.dutyCycle << std::endl;
 
     m_leftWheel.sendCommand(leftCommand);
-    m_rightWheel.sendCommand(std::max(-1.0, std::min(rightCommand * 1.05, 1.0)));
+    rightCommand.dutyCycle = std::max(-1.0, std::min(rightCommand * 1.05, 1.0))
+    m_rightWheel.sendCommand(rightCommand);
 }
 
 // update state based on driving at velocity for last dt millis
