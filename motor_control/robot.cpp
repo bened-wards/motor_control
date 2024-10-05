@@ -18,6 +18,7 @@ void Robot::onSpeedInterrupt() {
     updatePose(m_speedInterruptMillis);
 
     WheelSpeed desiredWheelSpeed = getDesiredWheelSpeed();
+    desiredWheelSpeed.right = desiredWheelSpeed.right * 1.015;
     Command leftCommand = m_leftController.getCommand(desiredWheelSpeed.left, leftSpeed);
     Command rightCommand = m_rightController.getCommand(desiredWheelSpeed.right, rightSpeed);
 
@@ -26,7 +27,6 @@ void Robot::onSpeedInterrupt() {
     //     ". Right command: " << ((rightCommand.direction==Direction::REVERSE) ? '-' : '+') << rightCommand.dutyCycle << std::endl;
 
     m_leftWheel.sendCommand(leftCommand);
-    rightCommand.dutyCycle = std::max(-1.0, std::min(rightCommand.dutyCycle * 1.05, 1.0));
     m_rightWheel.sendCommand(rightCommand);
 }
 

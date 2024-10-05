@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
 #include <csignal>
 #include <cstdlib>
 #include <string.h>

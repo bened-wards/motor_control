@@ -69,12 +69,12 @@ int main(int argc, char** argv)
         std::cout << "Creating right encoder thread\n";
         std::thread rightThread(Loops::encoder_event_handler, std::ref(rightEncoder));
 
-        double arr[5] = {0.05, 0.1, 0.15, 0.2, 0.25};
-        for (int i = 0; i < 5; i++) {
+        double arr[3] = {0.1, 0.2, 0.25};
+        for (int i = 0; i < 3; i++) {
             double vel = arr[i];
-            std::cout << "Driving forwards for 5s with speed " << vel << std::endl;
+            std::cout << "Driving forwards for 8s with speed " << vel << std::endl;
             robot.setDesiredVelocity(VelocityState{vel,0});
-            poll(std::chrono::seconds(5), robot, config.speedInterruptMillis, config.debugMode);
+            poll(std::chrono::seconds(8), robot, config.speedInterruptMillis, config.debugMode);
             leftMotor.stop();
             rightMotor.stop();
             State state = robot.getState();
