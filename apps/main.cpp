@@ -9,29 +9,70 @@ namespace {
     }
 }
 
+void preciseSleep(double seconds) {
+    using namespace std;
+    using namespace std::chrono;
+
+    static double estimate = 5e-3;
+    static double mean = 5e-3;
+    static double m2 = 0;
+    static int64_t count = 1;
+
+    while (seconds > estimate) {
+        auto start = high_resolution_clock::now();
+        this_thread::sleep_for(milliseconds(1));
+        auto end = high_resolution_clock::now();
+
+        double observed = (end - start).count() / 1e9;
+        seconds -= observed;
+
+        ++count;
+        double delta = observed - mean;
+        mean += delta / count;
+        m2   += delta * (observed - mean);
+        double stddev = sqrt(m2 / (count - 1));
+        estimate = mean + stddev;
+    }
+
+    // spin lock
+    auto start = high_resolution_clock::now();
+    while ((high_resolution_clock::now() - start).count() / 1e9 < seconds);
+}
+
 void poll(std::chrono::seconds duration, Robot& robot, Serial& serial, int speedInterruptMillis, bool debugMode) {
     std::cout << "Running main polling loop in main thread for " << static_cast<long>(duration.count()) << "seconds\n";
-    auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     auto end = start + duration;
     int printCounter = 0;
-    auto lastInterrupt = std::chrono::steady_clock::now();
-    while (std::chrono::steady_clock::now() < end && !Loops::stopFlag.load()) {
-        while (std::chrono::steady_clock::now() - lastInterrupt < std::chrono::milliseconds(speedInterruptMillis)) {
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
-        }
+    auto lastInterrupt = std::chrono::high_resolution_clock::now();
+    while (std::chrono::high_resolution_clock::now() < end && !Loops::stopFlag.load()) {
+        auto nextClock = std::chrono::high_resolution_clock::now();
+        double dT = (nextClock - lastInterrupt).count() / 1e9;
+
         robot.onSpeedInterrupt();
-        lastInterrupt = std::chrono::steady_clock::now();
+        
         // send the current robot state to the main controller
         const State& state = robot.getState();
         serial.writeCurrentState(state.x, state.y, state.theta);
 
         if (debugMode && ++printCounter > 25) {
+            std::cout << "dT: " << dT * 1e3 << "ms\n";
 	        const VelocityState& vel = robot.getCurrentVelocity();
             const VelocityState& desiredVel = robot.getDesiredVelocity();
             std::cout << "Curr. v=" << vel.v << ", w=" << vel.w << ". Des. v=" << desiredVel.v << ", w=" << desiredVel.w << std::endl;
             std::cout << "State: x=" << state.x << ", y=" << state.y << ", theta=" << state.theta << std::endl;
             printCounter = 0;
         }
+
+        lastInterrupt = std::chrono::high_resolution_clock::now();
+        double sleepSeconds = (lastInterrupt - nextClock).count() / 1e9;
+        if (sleepSeconds > 0) {
+            preciseSleep(sleepSeconds);
+        }
+
+        // while (std::chrono::high_resolution_clock::now() - nextClock < std::chrono::milliseconds(speedInterruptMillis)) {
+        //     std::this_thread::sleep_for(std::chrono::microseconds(50));
+        // }
     }
 }
 
