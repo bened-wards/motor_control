@@ -20,12 +20,15 @@ void poll(std::chrono::seconds duration, Robot& robot, Serial& serial, int speed
             std::this_thread::sleep_for(std::chrono::microseconds(100));
         }
         robot.onSpeedInterrupt();
+	auto timeNow = std::chrono::steady_clock::now();
+	double dT = (timeNow - lastInterrupt).count() / 1e6;
         lastInterrupt = std::chrono::steady_clock::now();
         // send the current robot state to the main controller
         const State& state = robot.getState();
         serial.writeCurrentState(state.x, state.y, state.theta);
 
         if (debugMode && ++printCounter > 25) {
+		std::cout << "dT: " << dT << "ms\n";
 	        const VelocityState& vel = robot.getCurrentVelocity();
             const VelocityState& desiredVel = robot.getDesiredVelocity();
             std::cout << "Curr. v=" << vel.v << ", w=" << vel.w << ". Des. v=" << desiredVel.v << ", w=" << desiredVel.w << std::endl;
