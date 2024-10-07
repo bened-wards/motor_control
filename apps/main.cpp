@@ -65,9 +65,9 @@ void poll(std::chrono::seconds duration, Robot& robot, Serial& serial, int speed
         }
 
         lastInterrupt = std::chrono::high_resolution_clock::now();
-        double sleepSeconds = (lastInterrupt - nextClock).count() / 1e9;
-        if (sleepSeconds > 0) {
-            preciseSleep(sleepSeconds);
+        double sleepMillis = speedInterruptMillis - (lastInterrupt - nextClock).count() / 1e6;
+        if (sleepMillis > 0) {
+            preciseSleep(sleepMillis/1e3);
         }
 
         // while (std::chrono::high_resolution_clock::now() - nextClock < std::chrono::milliseconds(speedInterruptMillis)) {
