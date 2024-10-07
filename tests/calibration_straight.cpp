@@ -30,7 +30,7 @@ void poll(std::chrono::seconds duration, Robot& robot, int speedInterruptMillis,
         auto sleepClock = std::chrono::high_resolution_clock::now();
         double sleepMillis = speedInterruptMillis - (lastInterrupt - sleepClock).count() / 1e6;
         if (sleepMillis > 0) {
-            preciseSleep(sleepMillis/1e3);
+            preciseSleep((sleepMillis-0.2)/1e3);
         }
     }
 }
