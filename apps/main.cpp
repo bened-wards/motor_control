@@ -56,7 +56,7 @@ void poll(std::chrono::seconds duration, Robot& robot, Serial& serial, int speed
         serial.writeCurrentState(state.x, state.y, state.theta);
 
         if (debugMode && ++printCounter > 25) {
-            std::cout << "dT: " << dT * 1e6 << "ms\n";
+            std::cout << "dT: " << dT * 1e3 << "ms\n";
 	        const VelocityState& vel = robot.getCurrentVelocity();
             const VelocityState& desiredVel = robot.getDesiredVelocity();
             std::cout << "Curr. v=" << vel.v << ", w=" << vel.w << ". Des. v=" << desiredVel.v << ", w=" << desiredVel.w << std::endl;
