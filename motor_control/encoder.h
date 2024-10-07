@@ -23,7 +23,7 @@ public:
 
     // interrupt methods
     // getSpeed called at 50Hz by controller via Robot
-    double getSpeed();
+    double getSpeed(double dtMillis);
     // tick called every time a tick occurs in encoder
     void tick();
     void tick(bool encAEvent, bool risingEdge);

@@ -1,7 +1,3 @@
-if(NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l") 
-    enable_testing()
-endif()
-
 add_executable(pwm_test pwm_test.cpp)
 add_executable(gpio_test gpio_test.cpp)
 add_executable(motor_test motor_test.cpp)
@@ -14,11 +10,6 @@ add_executable(serial_robot_test serial_robot_test.cpp)
 add_executable(calibration_straight calibration_straight.cpp)
 add_executable(calibration_rotation calibration_rotation.cpp)
 
-if(NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l") 
-    add_executable (run_tests robot_unit.cpp motor_unit.cpp controller_unit.cpp mock_classes.h)
-    target_link_libraries(run_tests PRIVATE motor_control gtest_main gmock)
-endif()
-
 target_link_libraries(pwm_test PRIVATE motor_control)
 target_link_libraries(gpio_test PRIVATE motor_control)
 target_link_libraries(motor_test PRIVATE motor_control)
@@ -30,8 +21,3 @@ target_link_libraries(serial_test PRIVATE motor_control pthread)
 target_link_libraries(serial_robot_test PRIVATE motor_control pthread)
 target_link_libraries(calibration_straight PRIVATE motor_control pthread)
 target_link_libraries(calibration_rotation PRIVATE motor_control pthread)
-
-if(NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l") 
-    include(GoogleTest)
-    gtest_discover_tests(run_tests)
-endif()

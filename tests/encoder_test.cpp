@@ -27,8 +27,8 @@ int main(int argc, char** argv)
         int printCounter = 0;
         while (true) {
             std::this_thread::sleep_for(std::chrono::milliseconds(config.speedInterruptMillis));
-            double leftSpeed = leftEncoder.getSpeed();
-            double rightSpeed = rightEncoder.getSpeed();
+            double leftSpeed = leftEncoder.getSpeed(config.speedInterruptMillis);
+            double rightSpeed = rightEncoder.getSpeed(config.speedInterruptMillis);
             printCounter++;
             if (printCounter > 10) {
                 std::cout << "Left encoder speed: " << leftSpeed << "rad/s. RPM: " << leftSpeed * 60 / (2 * M_PI) << std::endl;

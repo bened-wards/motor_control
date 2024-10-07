@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-double Encoder::getSpeed() {
+double Encoder::getSpeed(double dtMillis) {
     m_prevCount = m_newCount.load();
     m_newCount = m_count.load();
     // number of ticks since prev deltaT
     double diff = m_newCount - m_prevCount;
 
-    double radiansPerSecond = diff * m_radiansPerTick * 1000.0 / m_deltaTMillis;
+    double radiansPerSecond = diff * m_radiansPerTick * 1000.0 / dtMillis;
     return radiansPerSecond;
 }
 

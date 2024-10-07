@@ -24,7 +24,7 @@ public:
         assert(m_leftWheel.getRadius() == m_rightWheel.getRadius());
     }
 
-    void onSpeedInterrupt();
+    void onSpeedInterrupt(double dtMillis);
     void updatePose(const VelocityState& velocity, double dt);
     void updatePose(double dt) { updatePose(m_currentVelocity, dt);}
 

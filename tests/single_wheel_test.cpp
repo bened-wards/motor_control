@@ -5,23 +5,29 @@
 #include "robot_factory.h"
 #include "config.h"
 #include "loops.h"
+#include "precise_sleep.h"
 
 void poll(std::chrono::seconds duration, Wheel& leftWheel, int speedInterruptMillis) {
     std::cout << "Running main polling loop in main thread for " << static_cast<long>(duration.count()) << "seconds\n";
-    auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     auto end = start + duration;
     int printCounter = 0;
-    auto lastInterrupt = std::chrono::steady_clock::now();
-    while (std::chrono::steady_clock::now() < end) {
-        while (std::chrono::steady_clock::now() - lastInterrupt < std::chrono::milliseconds(speedInterruptMillis)) {
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
-        }
-        double leftSpeed = leftWheel.getSpeed();
-        lastInterrupt = std::chrono::steady_clock::now();
-        printCounter++;
-        if (printCounter > 10) {
+    auto lastInterrupt = std::chrono::high_resolution_clock::now();
+    while (std::chrono::high_resolution_clock::now() < end) {
+        auto nextClock = std::chrono::high_resolution_clock::now();
+        double dTMillis = (nextClock - lastInterrupt).count() / 1e6;
+        lastInterrupt = std::chrono::high_resolution_clock::now();
+        double leftSpeed = leftWheel.getSpeed(dTMillis);
+
+        if (++printCounter > 10) {
             std::cout << "Left wheel speed: " << leftSpeed << "rad/s. RPM: " << leftSpeed * 60 / (2 * M_PI) << std::endl;
             printCounter = 0;
+        }
+
+        auto sleepClock = std::chrono::high_resolution_clock::now();
+        double sleepMillis = speedInterruptMillis - (lastInterrupt - sleepClock).count() / 1e6;
+        if (sleepMillis > 0) {
+            preciseSleep(sleepMillis/1e3);
         }
     }
 }

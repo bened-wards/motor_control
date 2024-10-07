@@ -1,42 +1,13 @@
 #include "robot_factory.h"
 #include "config.h"
 #include "loops.h"
+#include "precise_sleep.h"
 
 namespace {
     void catchKeyboardInterrupt(int signum) {
         std::cout << "Got keyboard interrupt, exiting\n";
         Loops::stopFlag = true;
     }
-}
-
-void preciseSleep(double seconds) {
-    using namespace std;
-    using namespace std::chrono;
-
-    static double estimate = 5e-3;
-    static double mean = 5e-3;
-    static double m2 = 0;
-    static int64_t count = 1;
-
-    while (seconds > estimate) {
-        auto start = high_resolution_clock::now();
-        this_thread::sleep_for(milliseconds(1));
-        auto end = high_resolution_clock::now();
-
-        double observed = (end - start).count() / 1e9;
-        seconds -= observed;
-
-        ++count;
-        double delta = observed - mean;
-        mean += delta / count;
-        m2   += delta * (observed - mean);
-        double stddev = sqrt(m2 / (count - 1));
-        estimate = mean + stddev;
-    }
-
-    // spin lock
-    auto start = high_resolution_clock::now();
-    while ((high_resolution_clock::now() - start).count() / 1e9 < seconds);
 }
 
 void poll(std::chrono::seconds duration, Robot& robot, Serial& serial, int speedInterruptMillis, bool debugMode) {
@@ -47,16 +18,16 @@ void poll(std::chrono::seconds duration, Robot& robot, Serial& serial, int speed
     auto lastInterrupt = std::chrono::high_resolution_clock::now();
     while (std::chrono::high_resolution_clock::now() < end && !Loops::stopFlag.load()) {
         auto nextClock = std::chrono::high_resolution_clock::now();
-        double dT = (nextClock - lastInterrupt).count() / 1e9;
+        double dTMillis = (nextClock - lastInterrupt).count() / 1e6;
         lastInterrupt = std::chrono::high_resolution_clock::now();
-        robot.onSpeedInterrupt();
+        robot.onSpeedInterrupt(dTMillis);
         
         // send the current robot state to the main controller
         const State& state = robot.getState();
         serial.writeCurrentState(state.x, state.y, state.theta);
 
         if (debugMode && ++printCounter > 25) {
-            std::cout << "dT: " << dT * 1e3 << "ms\n";
+            std::cout << "dT: " << dTMillis << "ms\n";
 	        const VelocityState& vel = robot.getCurrentVelocity();
             const VelocityState& desiredVel = robot.getDesiredVelocity();
             std::cout << "Curr. v=" << vel.v << ", w=" << vel.w << ". Des. v=" << desiredVel.v << ", w=" << desiredVel.w << std::endl;

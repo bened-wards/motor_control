@@ -7,15 +7,15 @@
 // update the robot state based on the current wheel speeds
 // and then calculate and send the new wheel commands based on the 
 // current wheel speeds and the desired wheel speeds
-void Robot::onSpeedInterrupt() {
-    double leftSpeed = m_leftWheel.getSpeed();
-    double rightSpeed = m_rightWheel.getSpeed();
+void Robot::onSpeedInterrupt(double dtMillis) {
+    double leftSpeed = m_leftWheel.getSpeed(dtMillis);
+    double rightSpeed = m_rightWheel.getSpeed(dtMillis);
     setCurrentVelocity(leftSpeed, rightSpeed);
     // std::cout << "\nONSPEEDINTERRUPT\n" << std::endl;
 
     // TODO should probably just call getSpeed and do the rest in the polling loop
 
-    updatePose(m_speedInterruptMillis);
+    updatePose(dtMillis);
 
     WheelSpeed desiredWheelSpeed = getDesiredWheelSpeed();
     desiredWheelSpeed.right = desiredWheelSpeed.right * 1.015;

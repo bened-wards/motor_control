@@ -10,7 +10,7 @@ public:
 
     virtual bool sendCommand(Command command) const = 0;
     virtual bool sendCommand(double dutyCycle, Direction direction) const = 0;
-    virtual double getSpeed() const = 0;
+    virtual double getSpeed(double dtMillis) const = 0;
     virtual double getRadius() const = 0;
 };
 
@@ -23,7 +23,7 @@ public:
     bool sendCommand(Command command) const override;
     bool sendCommand(double dutyCycle, Direction direction) const override;
 
-    double getSpeed() const override { return m_encoder.getSpeed(); }
+    double getSpeed(double dtMillis) const override { return m_encoder.getSpeed(dtMillis); }
     double getRadius() const override { return m_radius; }
 
 private:

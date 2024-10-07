@@ -1,28 +1,36 @@
 #include "robot_factory.h"
 #include "config.h"
 #include "loops.h"
+#include "precise_sleep.h"
 
 void poll(std::chrono::seconds duration, Robot& robot, int speedInterruptMillis, bool debugMode) {
     std::cout << "Running main polling loop in main thread for " << static_cast<long>(duration.count()) << "seconds\n";
-    auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     auto end = start + duration;
     int printCounter = 0;
-    auto lastInterrupt = std::chrono::steady_clock::now();
-    while (std::chrono::steady_clock::now() < end) {
-        while (std::chrono::steady_clock::now() - lastInterrupt < std::chrono::milliseconds(speedInterruptMillis)) {
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
-        }
-        robot.onSpeedInterrupt();
-        lastInterrupt = std::chrono::steady_clock::now();
+    auto lastInterrupt = std::chrono::high_resolution_clock::now();
+    while (std::chrono::high_resolution_clock::now() < end) {
+        auto nextClock = std::chrono::high_resolution_clock::now();
+        double dTMillis = (nextClock - lastInterrupt).count() / 1e6;
+        lastInterrupt = std::chrono::high_resolution_clock::now();
+        robot.onSpeedInterrupt(dTMillis);
+        
         // send the current robot state to the main controller
         const State& state = robot.getState();
 
-        if (debugMode && ++printCounter > 10) {
+        if (debugMode && ++printCounter > 25) {
+            std::cout << "dT: " << dTMillis << "ms\n";
 	        const VelocityState& vel = robot.getCurrentVelocity();
             const VelocityState& desiredVel = robot.getDesiredVelocity();
             std::cout << "Curr. v=" << vel.v << ", w=" << vel.w << ". Des. v=" << desiredVel.v << ", w=" << desiredVel.w << std::endl;
             std::cout << "State: x=" << state.x << ", y=" << state.y << ", theta=" << state.theta << std::endl;
             printCounter = 0;
+        }
+
+        auto sleepClock = std::chrono::high_resolution_clock::now();
+        double sleepMillis = speedInterruptMillis - (lastInterrupt - sleepClock).count() / 1e6;
+        if (sleepMillis > 0) {
+            preciseSleep(sleepMillis/1e3);
         }
     }
 }
