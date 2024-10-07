@@ -50,6 +50,8 @@ void poll(std::chrono::seconds duration, Robot& robot, Serial& serial, int speed
         double dT = (nextClock - lastInterrupt).count() / 1e9;
 
         robot.onSpeedInterrupt();
+
+        lastInterrupt = std::chrono::high_resolution_clock::now();
         
         // send the current robot state to the main controller
         const State& state = robot.getState();
@@ -64,7 +66,6 @@ void poll(std::chrono::seconds duration, Robot& robot, Serial& serial, int speed
             printCounter = 0;
         }
 
-        lastInterrupt = std::chrono::high_resolution_clock::now();
         double sleepMillis = speedInterruptMillis - (lastInterrupt - nextClock).count() / 1e6;
         if (sleepMillis > 0) {
             preciseSleep(sleepMillis/1e3);
